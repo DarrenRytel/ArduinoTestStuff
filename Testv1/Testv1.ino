@@ -10,6 +10,10 @@ int RightPin = A1;    // Twisty thing connected to digital pin A1
 int leftValue = 0;    // variable to store the read value of left side
 int RightValue = 0;   // variable to store the read value of right side
 
+int inByte;
+int pot1 = 0;
+int pot2 = 0;
+
 void setup()
 {
   pinMode(Leftled1, OUTPUT);      // sets the digital pin A0 as output
@@ -30,20 +34,37 @@ void loop()
 {
   if(Serial.available() > 0) 
   {
-    leftValue = analogRead(LeftPin);
-    RightValue = analogRead(RightPin);
+    inByte = Serial.read();
 
-    Serial.print("I got: ");
-    Serial.print(leftValue, DEC);
-    Serial.print(RightValue, DEC);
+    if (inByte == 'P') sensorPositions();
+
   }
-  leftValue = digitalRead(LeftPin);     // read the input pin
-  digitalWrite(Leftled1, leftValue);    // sets the LED to the button's value
-  digitalWrite(Leftled2, leftValue);    // sets the LED to the button's value
 
+  delay(20);
+}
 
-  RightValue = digitalRead(RightPin);
-  digitalWrite(Rightled1, RightValue);
-  digitalWrite(Rightled2, RightValue);
+void sensorPositions(){
+  pot1 = analogRead(A0);
+  pot2 = analogRead(A1);
+  
+  Serial.print(getPadded(pot1));
+  Serial.print("-");
+  Serial.println(getPadded(pot2));
+}
 
+String getPadded(int num){
+  
+  char buff[5];
+  char padded[6];
+
+  sprintf(buff, "%.4u", num);
+
+  padded[0] = buff[0];
+  padded[1] = buff[1];
+  padded[2] = buff[2];
+  padded[3] = buff[3];
+  padded[4] = buff[4];
+  padded[5] = '\0';
+
+  return String(padded);
 }
